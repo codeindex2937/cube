@@ -1,0 +1,219 @@
+<html>
+  <head>
+    <style>
+      .map-label {
+        font-size: 14px;
+        font-weight: bold;
+        text-align: center;
+      }
+      #app {
+        display: flex;
+        flex-direction: column;
+      }
+      #map {
+        flex-grow: 1;
+      }
+      .container-box {
+        display: flex;
+        flex-direction: row;
+      }
+      .container {
+        min-height: 32px;
+        max-height: 200px;
+        min-width: 100px;
+        overflow: auto;
+        border: 3px dashed black;
+        margin-bottom: 5px;
+        padding: 3px;
+        flex-grow: 1;
+      }
+      .new {
+        background-color: #ffffe6;
+      }
+      .allow {
+        background-color: #e6ffe6;
+      }
+      .deny {
+        background-color: #ffe6e6;
+      }
+      .candidate {
+        background-color: #e6e6ff;
+      }
+      .tag {
+        display: inline-block;
+        margin: 2px;
+        padding: 2px;
+        border-radius: 3px;
+        border: 3px solid DimGray;
+      }
+    </style>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+    <script src="static/Sortable.min.js"></script>
+    <script type="text/javascript">
+      const markerMap = {};
+      let map = null;
+      function initMap(vendors) {
+        map = L.map('map').setView([{{ .lat }}, {{ .lng }}], 14);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        for (const v of vendors) {
+          AddVendor(map, v);
+        }
+      }
+      // Function for adding a marker to the page.
+      function AddVendor(map, vendor) {
+        const iconSize = 64;
+        const icon = L.icon({
+          iconUrl:      vendor.icon,
+          iconSize:     [iconSize, iconSize], // size of the icon
+          iconAnchor:   [iconSize/2, iconSize], // point of the icon which will correspond to marker's location
+          popupAnchor:  [0, -iconSize] // point from which the popup should open relative to the iconAnchor
+        });
+        const marker = L.marker([vendor.lat, vendor.lng], {icon: icon});
+
+        markerMap[vendor.id] = marker;
+        
+        marker.addTo(map)
+         .bindPopup('<a target="_blank" href="'+vendor.url+'">'+vendor.name+'</a>')
+         .bindTooltip(
+            "★ "+vendor.rating.toFixed(1)+"<br>"+vendor.cuisines.join(", "),
+            {
+              permanent: true,
+              direction: 'bottom',
+              className: "map-label",
+              offset: [0, 0]
+            }
+          );
+      }
+      function createVendorNode(vendor) {
+          const a = document.createElement("a");
+          a.setAttribute("href", vendor.url);
+          a.setAttribute("target", "_blank");
+          a.innerHTML = vendor.name;
+
+          const div = document.createElement("div");
+          div.setAttribute("class", "tag");
+          div.setAttribute("vendor-id", vendor.id);
+          div.setAttribute("vendor-name", vendor.name);
+          div.setAttribute("vendor-code", vendor.code || '');
+          div.setAttribute("vendor-url", vendor.url);
+          div.appendChild(a);
+          return div;
+      }
+      async function attachTag(vendorID, foodTagID, vendorName, vendorCode, vendorURL) {
+          await fetch("chat", {
+              method: 'POST', 
+              headers: {
+                  'Content-Type': 'application/json'
+              },
+              redirect: 'follow',
+              body: "text="+encodeURIComponent("food attach_tag "+ vendorID + " " + foodTagID + " '" + vendorName + "' "  + " '" + vendorCode + "' " + vendorURL),
+          });
+      }
+      function init() {
+          const tagMap = {};
+          const vendors = {{ .vendors }};
+          const containers = [
+              document.getElementById('new'),
+              document.getElementById('allow'),
+              document.getElementById('deny'),
+              document.getElementById('candidate'),
+          ];
+          
+          for (const relation of {{ .relations }}) {
+              tagMap[relation['VendorID']] = relation;
+          }
+
+          for (const container of containers) {
+              Sortable.create(container, {
+                  group: {
+                      name: container.id,
+                      pull: true,
+                      put: true,
+                  },
+                  animation: 100,
+                  onStart: function(evt) {
+                    const vendorID = evt.item.getAttribute('vendor-id');
+                    const marker = markerMap[vendorID];
+                    if (!marker) {
+                      // created from db
+                      return;
+                    }
+
+                    const location = marker.getLatLng();
+                    
+                    map.flyTo([location.lat, location.lng], 16);
+                    marker.openPopup();
+                  },
+                  onEnd: function(evt) {
+                      if (evt.from == evt.to) {
+                          return;
+                      }
+
+                      const vendorID = evt.item.getAttribute('vendor-id');
+                      const vendorName = evt.item.getAttribute('vendor-name');
+                      const vendorURL = evt.item.getAttribute('vendor-url');
+                      const vendorCode = evt.item.getAttribute('vendor-code');
+                      if (evt.to === containers[0]) {
+                          attachTag(vendorID, 0, vendorName, vendorCode, vendorURL);
+                      }
+                      else if (evt.to === containers[1]) {
+                          attachTag(vendorID, 1, vendorName, vendorCode, vendorURL);
+                      }
+                      else if (evt.to === containers[2]) {
+                          attachTag(vendorID, 2, vendorName, vendorCode, vendorURL);
+                      }
+                      else if (evt.to === containers[3]) {
+                          attachTag(vendorID, 3, vendorName, vendorCode, vendorURL);
+                      }
+                  }
+              });
+          }
+
+          for (const tag of Object.values(tagMap)) {
+            const vendorNode = createVendorNode({
+              id: tag['VendorID'],
+              name: tag['VendorName'],
+              url: tag['VendorURL'],
+            });
+
+            if (!tag['FoodTagID']) {
+              containers[0].appendChild(vendorNode);
+            } else if (tag['FoodTagID'] === 1) {
+              containers[1].appendChild(vendorNode);
+            } else if (tag['FoodTagID'] === 2) {
+              containers[2].appendChild(vendorNode);
+            } else if (tag['FoodTagID'] === 3) {
+              containers[3].appendChild(vendorNode);
+            }
+          }
+
+          for (const vendor of vendors) {
+            if (vendor.id in tagMap) {
+              continue;
+            }
+
+            const vendorNode = createVendorNode(vendor);
+            containers[0].appendChild(vendorNode);
+          }
+
+          initMap(vendors);
+      }
+    </script>
+  </head>
+  <body onLoad="init()">
+    <div id="app" style="width:100%;height:100%;">
+      <div class="container-box">
+        <div id="new" class="container new"></div>
+        <div id="allow" class="container allow"></div>
+        <div id="deny" class="container deny"></div>
+        <div id="candidate" class="container candidate"></div>
+      </div>
+      <div id="map" styl></div>
+    </div>
+  </body>
+</html>
