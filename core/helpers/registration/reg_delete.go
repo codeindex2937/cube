@@ -13,15 +13,15 @@ type DeleteArgs struct {
 	IDs []uint64 `arg:"positional"`
 }
 
-func (h *Reg) delete(req *context.ChatContext, args *DeleteArgs) context.Response {
+func (h *Reg) delete(req *context.ChatContext, args *DeleteArgs) context.IResponse {
 	if len(args.IDs) < 1 {
 		return utils.PrintUsage(arg.Config{Program: "delete"}, args)
 	}
 
 	alarmDeletedCount, err := deleteRegs(h.DB, h.Schedule, h.Event, req.UserID, args.IDs)
 	if err != nil {
-		return context.Response(err.Error())
+		return context.NewTextResponse(err.Error())
 	}
 
-	return context.Response(fmt.Sprintf("%v alarms deleted", alarmDeletedCount))
+	return context.NewTextResponse(fmt.Sprintf("%v alarms deleted", alarmDeletedCount))
 }

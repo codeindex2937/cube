@@ -11,13 +11,13 @@ type ClearArgs struct {
 	Dummy []string `arg:"positional"`
 }
 
-func (h *Alarm) clear(req *context.ChatContext, args *ClearArgs) context.Response {
+func (h *Alarm) clear(req *context.ChatContext, args *ClearArgs) context.IResponse {
 	alarms := []database.Alarm{}
 	tx := h.DB.Find(&alarms, map[string]interface{}{
 		"user_id": req.UserID,
 	})
 	if tx.Error != nil {
-		return context.Response(tx.Error.Error())
+		return context.NewTextResponse(tx.Error.Error())
 	}
 
 	alarmIDs := []uint64{}
@@ -27,8 +27,8 @@ func (h *Alarm) clear(req *context.ChatContext, args *ClearArgs) context.Respons
 
 	rowsAffected, err := DeleteAlarms(h.DB, h.Schedule, h.Event, alarmIDs)
 	if err != nil {
-		return context.Response(err.Error())
+		return context.NewTextResponse(err.Error())
 	}
 
-	return context.Response(fmt.Sprintf("%v alarms deleted", rowsAffected))
+	return context.NewTextResponse(fmt.Sprintf("%v alarms deleted", rowsAffected))
 }

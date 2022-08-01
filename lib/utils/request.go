@@ -26,20 +26,20 @@ func ParseRequest(body []byte) (ctx context.ChatContext, err error) {
 	}, nil
 }
 
-func PrintHelp(cmd string, args interface{}) context.Response {
+func PrintHelp(cmd string, args interface{}) context.IResponse {
 	p, _ := arg.NewParser(arg.Config{Program: cmd}, args)
 	buf := new(bytes.Buffer)
 	buf.WriteString("```\n")
 	p.WriteHelp(buf)
 	buf.WriteString("```\n")
-	return context.Response(buf.String())
+	return context.NewTextResponse(buf.String())
 }
 
-func PrintUsage(config arg.Config, args interface{}) context.Response {
+func PrintUsage(config arg.Config, args interface{}) context.IResponse {
 	p, _ := arg.NewParser(config, args)
 	buf := new(bytes.Buffer)
 	buf.WriteString("```\n")
 	p.WriteUsage(buf)
 	buf.WriteString("```\n")
-	return context.Response(buf.String())
+	return context.NewTextResponse(buf.String())
 }

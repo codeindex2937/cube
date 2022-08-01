@@ -26,18 +26,16 @@ var log = logger.Log
 
 func rootHandler(c *core.Core, ctx *gin.Context) {
 	var err error
-	var text string
-	defer func(text *string) {
-		resp := gin.H{
-			"text": text,
-		}
-
+	var h gin.H
+	defer func(h *gin.H) {
 		if err != nil {
-			resp["text"] = err.Error()
+			ctx.JSON(200, gin.H{
+				"text": err.Error(),
+			})
+		} else {
+			ctx.JSON(200, h)
 		}
-
-		ctx.JSON(200, resp)
-	}(&text)
+	}(&h)
 
 	body, err := ioutil.ReadAll(ctx.Request.Body)
 	if err != nil {
@@ -67,11 +65,11 @@ func rootHandler(c *core.Core, ctx *gin.Context) {
 		return
 	}
 	if len(args) < 1 {
-		text = string(core.PrintHelp())
+		h = core.PrintHelp().Normalize()
 		return
 	}
 
-	text = string(c.Handle(req, args))
+	h = c.Handle(req, args).Normalize()
 }
 
 func main() {

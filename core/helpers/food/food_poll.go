@@ -16,13 +16,13 @@ type PollArgs struct {
 	Limit int64 `arg:"positional"`
 }
 
-func (h *Food) poll(req *context.ChatContext, args *PollArgs) context.Response {
+func (h *Food) poll(req *context.ChatContext, args *PollArgs) context.IResponse {
 	limit := 6
 
 	allowedVendors := []database.FoodTagRelation{}
 	tx := h.DB.Find(&allowedVendors, map[string]interface{}{"food_tag_id": 1})
 	if tx.Error != nil {
-		return context.Response(tx.Error.Error())
+		return context.NewTextResponse(tx.Error.Error())
 	}
 
 	rand.Seed(time.Now().UnixNano())
@@ -33,7 +33,8 @@ func (h *Food) poll(req *context.ChatContext, args *PollArgs) context.Response {
 	}
 
 	var resp string
-	respCount := 0
+	respCount := 1
+
 	for _, v := range allowedVendors {
 		if len(v.VendorCode) < 1 {
 			log.Infof("%v: no code", v.VendorCode)
@@ -73,7 +74,7 @@ func (h *Food) poll(req *context.ChatContext, args *PollArgs) context.Response {
 		}
 	}
 
-	return context.Response(fmt.Sprintf("```%v```", resp))
+	return context.NewTextResponse(fmt.Sprintf("```%v```", resp))
 }
 
 func getVendorInfo(code string) (v Vendor, err error) {

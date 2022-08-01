@@ -31,7 +31,7 @@ var config = arg.Config{Program: "alarm"}
 const EventCreated = "alarm_created"
 const EventDeleted = "alarm_deleted"
 
-func (h *Alarm) Handle(req *context.ChatContext, args *Args) context.Response {
+func (h *Alarm) Handle(req *context.ChatContext, args *Args) context.IResponse {
 	switch {
 	case args.Create != nil:
 		return h.create(req, args.Create)

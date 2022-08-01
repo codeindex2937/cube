@@ -11,9 +11,9 @@ type CreateArgs struct {
 	Dummy       []string `arg:"positional"`
 }
 
-func (h *Reg) create(req *context.ChatContext, args *CreateArgs) context.Response {
+func (h *Reg) create(req *context.ChatContext, args *CreateArgs) context.IResponse {
 	if 1 > len(args.Token) {
-		return "require token"
+		return context.NewTextResponse("require token")
 	}
 
 	record := database.Registration{
@@ -24,12 +24,12 @@ func (h *Reg) create(req *context.ChatContext, args *CreateArgs) context.Respons
 	}
 	tx := h.DB.Create(&record)
 	if tx.Error != nil {
-		return context.Response(tx.Error.Error())
+		return context.NewTextResponse(tx.Error.Error())
 	}
 
 	if tx.RowsAffected > 0 {
-		return context.Response(displayRegistration(record))
+		return context.NewTextResponse(displayRegistration(record))
 	} else {
-		return context.Response("nothing changed")
+		return context.NewTextResponse("nothing changed")
 	}
 }

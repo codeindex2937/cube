@@ -25,7 +25,7 @@ func TestRegCreate(t *testing.T) {
 	}
 
 	resp := c.CreateReg(ctx1, description1, token1)
-	assert.Equal(t, context.Response(`ID=1 "desc1" Token=tok1`), resp)
+	assert.Equal(t, context.NewTextResponse(`ID=1 "desc1" Token=tok1`), resp)
 
 	record := database.Registration{}
 	tx := c.DB.First(&record, map[string]interface{}{"token": token1})
@@ -35,7 +35,7 @@ func TestRegCreate(t *testing.T) {
 	}
 
 	resp = c.CreateReg(ctx2, description2, token2)
-	assert.Equal(t, context.Response(`ID=2 "desc2" Token=tok2`), resp)
+	assert.Equal(t, context.NewTextResponse(`ID=2 "desc2" Token=tok2`), resp)
 
 	record = database.Registration{}
 	tx = c.DB.First(&record, map[string]interface{}{"token": token2})

@@ -36,7 +36,7 @@ type Food struct {
 	DB *gorm.DB
 }
 
-func (h *Food) Handle(req *context.ChatContext, args *Args) context.Response {
+func (h *Food) Handle(req *context.ChatContext, args *Args) context.IResponse {
 	switch {
 	case args.List != nil:
 		return h.list(req, args.List)

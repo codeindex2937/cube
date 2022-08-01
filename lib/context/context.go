@@ -1,8 +1,21 @@
 package context
 
-type Response string
+import (
+	"github.com/gin-gonic/gin"
+)
 
-const Success Response = "success"
+type IResponse interface {
+	Normalize() gin.H
+	Text() string
+}
+
+type TextResponse struct {
+	text string
+}
+
+var Success = TextResponse{
+	text: "success",
+}
 
 type ChatContext struct {
 	Token       string `json:"token"`
@@ -19,4 +32,26 @@ type ChatContext struct {
 type Context struct {
 	Args []string
 	Req  ChatContext
+}
+
+func (r TextResponse) Normalize() gin.H {
+	return gin.H{
+		"text": r.text,
+	}
+}
+
+func (r TextResponse) Text() string {
+	return r.text
+}
+
+func NewTextResponse(text string) IResponse {
+	return TextResponse{
+		text: text,
+	}
+}
+
+func NewErrorResponse(err error) IResponse {
+	return TextResponse{
+		text: err.Error(),
+	}
 }

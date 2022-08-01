@@ -13,7 +13,7 @@ type SetTagArgs struct {
 	VendorURL  string `arg:"positional"`
 }
 
-func (h *Food) attachTag(req *context.ChatContext, args *SetTagArgs) context.Response {
+func (h *Food) attachTag(req *context.ChatContext, args *SetTagArgs) context.IResponse {
 	record := database.FoodTagRelation{
 		FoodTagID:  args.FoodTagID,
 		VendorID:   args.VendorID,
@@ -24,7 +24,7 @@ func (h *Food) attachTag(req *context.ChatContext, args *SetTagArgs) context.Res
 
 	tx := h.DB.Where(map[string]interface{}{"vendor_id": args.VendorID}).Delete(&database.FoodTagRelation{})
 	if tx.Error != nil {
-		return context.Response(tx.Error.Error())
+		return context.NewTextResponse(tx.Error.Error())
 	}
 
 	if args.FoodTagID <= 0 {
@@ -33,7 +33,7 @@ func (h *Food) attachTag(req *context.ChatContext, args *SetTagArgs) context.Res
 
 	tx = h.DB.Create(&record)
 	if tx.Error != nil {
-		return context.Response(tx.Error.Error())
+		return context.NewTextResponse(tx.Error.Error())
 	}
 
 	return context.Success

@@ -39,7 +39,7 @@ type Core struct {
 
 var log = logger.Log
 
-func PrintHelp() context.Response {
+func PrintHelp() context.IResponse {
 	return utils.PrintHelp("", &rootArgs{})
 }
 
@@ -148,11 +148,11 @@ func (c *Core) InitAlarms() error {
 	return nil
 }
 
-func (c *Core) Handle(req context.ChatContext, args []string) context.Response {
+func (c *Core) Handle(req context.ChatContext, args []string) context.IResponse {
 	root := &rootArgs{}
 	p, err := arg.NewParser(arg.Config{}, root)
 	if err != nil {
-		return context.Response(err.Error())
+		return context.NewErrorResponse(err)
 	}
 
 	err = p.Parse(args)
@@ -187,19 +187,19 @@ func (p *Core) SendMessage(userID string, regID uint64, m string) {
 		resp := p.Handle(context.ChatContext{
 			UserID: userID,
 		}, args)
-		message.Service().Send(p.DB, userID, regID, string(resp))
+		message.Service().Send(p.DB, userID, regID, resp.Text())
 	}
 }
 
-func (p *Core) CreateReg(req context.ChatContext, description, token string) context.Response {
+func (p *Core) CreateReg(req context.ChatContext, description, token string) context.IResponse {
 	return p.Handle(req, []string{"reg", "create", description, token})
 }
 
-func (p *Core) ListReg(req context.ChatContext) context.Response {
+func (p *Core) ListReg(req context.ChatContext) context.IResponse {
 	return p.Handle(req, []string{"reg", "list"})
 }
 
-func (p *Core) DeleteReg(req context.ChatContext, channels ...uint64) context.Response {
+func (p *Core) DeleteReg(req context.ChatContext, channels ...uint64) context.IResponse {
 	ids := []string{}
 	for _, c := range channels {
 		ids = append(ids, strconv.FormatUint(c, 10))
@@ -208,34 +208,34 @@ func (p *Core) DeleteReg(req context.ChatContext, channels ...uint64) context.Re
 	return p.Handle(req, append([]string{"reg", "delete"}, ids...))
 }
 
-func (p *Core) ClearReg(req context.ChatContext) context.Response {
+func (p *Core) ClearReg(req context.ChatContext) context.IResponse {
 	return p.Handle(req, []string{"reg", "clear"})
 }
 
-func (c *Core) CreateAlarmToChannel(req context.ChatContext, channel uint64, pattern, message string) context.Response {
+func (c *Core) CreateAlarmToChannel(req context.ChatContext, channel uint64, pattern, message string) context.IResponse {
 	return c.Handle(req, []string{"alarm", "create", "--chan", strconv.FormatUint(channel, 10), pattern, message})
 }
 
-func (c *Core) CreateAlarm(req context.ChatContext, pattern, message string) context.Response {
+func (c *Core) CreateAlarm(req context.ChatContext, pattern, message string) context.IResponse {
 	return c.Handle(req, []string{"alarm", "create", pattern, message})
 }
 
-func (c *Core) DeleteAlarm(req context.ChatContext, IDs ...string) context.Response {
+func (c *Core) DeleteAlarm(req context.ChatContext, IDs ...string) context.IResponse {
 	return c.Handle(req, append([]string{"alarm", "delete"}, IDs...))
 }
 
-func (c *Core) ClearAlarm(req context.ChatContext) context.Response {
+func (c *Core) ClearAlarm(req context.ChatContext) context.IResponse {
 	return c.Handle(req, []string{"alarm", "clear"})
 }
 
-func (c *Core) ListAlarm(req context.ChatContext) context.Response {
+func (c *Core) ListAlarm(req context.ChatContext) context.IResponse {
 	return c.Handle(req, []string{"alarm", "list"})
 }
 
-func (c *Core) ListFood(req context.ChatContext) context.Response {
+func (c *Core) ListFood(req context.ChatContext) context.IResponse {
 	return c.Handle(req, []string{"food", "list"})
 }
 
-func (c *Core) SetFoodTag(req context.ChatContext, foodID, foodTagID uint64) context.Response {
+func (c *Core) SetFoodTag(req context.ChatContext, foodID, foodTagID uint64) context.IResponse {
 	return c.Handle(req, []string{"food", "attach_tag", strconv.FormatUint(foodID, 10), strconv.FormatUint(foodTagID, 10)})
 }

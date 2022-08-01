@@ -57,7 +57,7 @@ func TestAlarmDelete(t *testing.T) {
 	assert.True(t, sched.ExistTask(4))
 
 	resp := c.DeleteAlarm(ctx, "2", "3")
-	assert.Equal(t, context.Response("2 alarms deleted"), resp)
+	assert.Equal(t, context.NewTextResponse("2 alarms deleted"), resp)
 
 	assert.True(t, sched.ExistTask(1))
 	assert.False(t, sched.ExistTask(2))

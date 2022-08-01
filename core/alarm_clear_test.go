@@ -33,7 +33,7 @@ func TestAlarmClear(t *testing.T) {
 	assert.True(t, sched.ExistTask(3))
 
 	resp := c.ClearAlarm(ctx)
-	assert.Equal(t, context.Response("3 alarms deleted"), resp)
+	assert.Equal(t, "3 alarms deleted", resp.Text())
 
 	assert.False(t, sched.ExistTask(1))
 	assert.False(t, sched.ExistTask(2))

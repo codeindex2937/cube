@@ -45,14 +45,14 @@ func extractArgs(args []string) (result []string, err error) {
 	return
 }
 
-func (h *Shuffle) Handle(req *context.ChatContext, args *ShuffleArgs) context.Response {
+func (h *Shuffle) Handle(req *context.ChatContext, args *ShuffleArgs) context.IResponse {
 	candidates, err := extractArgs(args.Candidates)
 	if err != nil {
-		return context.Response(err.Error())
+		return context.NewTextResponse(err.Error())
 	}
 
 	rand.Seed(time.Now().UnixNano())
 	rand.Shuffle(len(candidates), func(i, j int) { candidates[i], candidates[j] = candidates[j], candidates[i] })
 
-	return context.Response(strings.Join(candidates, "\n"))
+	return context.NewTextResponse(strings.Join(candidates, "\n"))
 }

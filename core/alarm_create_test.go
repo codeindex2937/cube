@@ -19,7 +19,7 @@ func TestAlarmCreate(t *testing.T) {
 	}
 
 	resp := c.CreateAlarm(ctx, pattern, message)
-	if !assert.Equal(t, context.Response("ID=1 \"* * * * *\" \"surprise\" Next=0001-01-01 00:00:00 +0000 UTC"), resp) {
+	if !assert.Equal(t, context.NewTextResponse("ID=1 \"* * * * *\" \"surprise\" Next=0001-01-01 00:00:00 +0000 UTC"), resp) {
 		return
 	}
 

@@ -38,7 +38,7 @@ type ListArgs struct {
 	CuisineTypes []string `arg:"positional"`
 }
 
-func (h *Food) list(req *context.ChatContext, args *ListArgs) context.Response {
+func (h *Food) list(req *context.ChatContext, args *ListArgs) context.IResponse {
 	cuisineTypes := []CuisineType{}
 	limit := 6
 
@@ -50,7 +50,7 @@ func (h *Food) list(req *context.ChatContext, args *ListArgs) context.Response {
 	relations := []database.FoodTagRelation{}
 	tx := h.DB.Find(&relations)
 	if tx.Error != nil {
-		return context.Response(tx.Error.Error())
+		return context.NewTextResponse(tx.Error.Error())
 	}
 
 	relationMap := map[uint64]database.FoodTagRelation{}
@@ -97,7 +97,7 @@ func (h *Food) list(req *context.ChatContext, args *ListArgs) context.Response {
 		)
 	}
 
-	return context.Response(fmt.Sprintf("```%v```", resp))
+	return context.NewTextResponse(fmt.Sprintf("```%v```", resp))
 }
 
 func listVendors(lat, lng float64, cuisineTypes []CuisineType) (vs []Vendor) {

@@ -24,22 +24,22 @@ func TestRegList(t *testing.T) {
 	}
 
 	resp := c.CreateReg(ctx1, description1, token1)
-	if !assert.Equal(t, context.Response(`ID=1 "reg1" Token=tok1`), resp) {
+	if !assert.Equal(t, context.NewTextResponse(`ID=1 "reg1" Token=tok1`), resp) {
 		return
 	}
 
 	resp = c.CreateReg(ctx2, description2, token2)
-	if !assert.Equal(t, context.Response(`ID=2 "reg2" Token=tok2`), resp) {
+	if !assert.Equal(t, context.NewTextResponse(`ID=2 "reg2" Token=tok2`), resp) {
 		return
 	}
 
 	resp = c.ListReg(ctx1)
-	if !assert.Equal(t, context.Response("ID=1 \"reg1\" Token=tok1\n"), resp) {
+	if !assert.Equal(t, context.NewTextResponse("ID=1 \"reg1\" Token=tok1\n"), resp) {
 		return
 	}
 
 	resp = c.ListReg(ctx2)
-	if !assert.Equal(t, context.Response("ID=2 \"reg2\" Token=tok2\n"), resp) {
+	if !assert.Equal(t, context.NewTextResponse("ID=2 \"reg2\" Token=tok2\n"), resp) {
 		return
 	}
 }

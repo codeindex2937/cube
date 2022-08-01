@@ -31,7 +31,7 @@ type RegisteredAlarm struct {
 	RegID   uint64
 }
 
-func (h *Reg) Handle(req *context.ChatContext, args *Args) context.Response {
+func (h *Reg) Handle(req *context.ChatContext, args *Args) context.IResponse {
 	switch {
 	case args.Create != nil:
 		return h.create(req, args.Create)

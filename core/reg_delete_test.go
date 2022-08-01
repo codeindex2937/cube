@@ -85,7 +85,7 @@ func TestRegDelete(t *testing.T) {
 	setupTestRegDelete(c)
 
 	resp := c.DeleteReg(ctx, 1, 2)
-	assert.Equal(t, context.Response("2 alarms deleted"), resp)
+	assert.Equal(t, context.NewTextResponse("2 alarms deleted"), resp)
 
 	record := database.Registration{}
 	assert.Equal(t, gorm.ErrRecordNotFound, c.DB.First(&record, 1).Error)

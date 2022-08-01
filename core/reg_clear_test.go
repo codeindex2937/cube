@@ -25,7 +25,7 @@ func TestRegClear(t *testing.T) {
 	assert.True(t, sched.ExistTask(4))
 
 	resp := c.ClearReg(ctx)
-	assert.Equal(t, context.Response("3 registrations deleted, 3 alarms deleted"), resp)
+	assert.Equal(t, context.NewTextResponse("3 registrations deleted, 3 alarms deleted"), resp)
 
 	assert.False(t, sched.ExistTask(1))
 	assert.False(t, sched.ExistTask(2))

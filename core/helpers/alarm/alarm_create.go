@@ -16,7 +16,7 @@ type CreateArgs struct {
 	Message     string `arg:"positional"`
 }
 
-func (h *Alarm) create(req *context.ChatContext, args *CreateArgs) context.Response {
+func (h *Alarm) create(req *context.ChatContext, args *CreateArgs) context.IResponse {
 	if len(args.CronPattern) < 1 {
 		return utils.PrintUsage(arg.Config{Program: "create"}, args)
 	}
@@ -34,7 +34,7 @@ func (h *Alarm) create(req *context.ChatContext, args *CreateArgs) context.Respo
 			"user_id": req.UserID,
 		})
 		if tx.Error != nil {
-			return context.Response(fmt.Sprintf("unknown channel(%v): %v", args.Channel, tx.Error))
+			return context.NewTextResponse(fmt.Sprintf("unknown channel(%v): %v", args.Channel, tx.Error))
 		}
 
 		record.RegID = args.Channel
@@ -42,10 +42,10 @@ func (h *Alarm) create(req *context.ChatContext, args *CreateArgs) context.Respo
 
 	tx := h.DB.Save(record)
 	if tx.Error != nil {
-		return context.Response(tx.Error.Error())
+		return context.NewTextResponse(tx.Error.Error())
 	}
 
 	h.Event.Publish(EventCreated, record)
 
-	return context.Response(displayCurrentTask(h.Schedule, *record))
+	return context.NewTextResponse(displayCurrentTask(h.Schedule, *record))
 }
