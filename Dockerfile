@@ -23,12 +23,5 @@ RUN apt-get clean && rm -rf /tmp/* /var/tmp/* /var/lib/apt/archive/* /var/lib/ap
 
 WORKDIR /app
 COPY --from=builder /go/bin/main worker
-RUN mkdir etc
-RUN mkdir templates
-RUN mkdir static
-COPY etc/conf.yaml /app/etc/
-COPY templates/* /app/templates/
-COPY static/* /app/static/
-COPY chat.db /app/
 
 CMD ["/app/worker"]

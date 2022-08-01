@@ -84,7 +84,7 @@ func main() {
 	ts := utils.NewTimeService()
 	ts.SetTimezone(config.Conf.Time.Timezone)
 
-	db, err := database.New("chat.db")
+	db, err := database.New("etc/chat.db")
 	if err != nil {
 		log.Errorf("%v", err)
 		return
