@@ -17,7 +17,7 @@ type IService interface {
 }
 
 var impl IService
-var log = logger.Log
+var log = logger.Log()
 
 type serviceImpl struct{}
 

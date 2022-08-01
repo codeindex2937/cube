@@ -4,6 +4,8 @@ import (
 	"cube/lib/logger"
 )
 
+var log = logger.Log()
+
 type Subscriber func(event string, ctx interface{})
 
 type IService interface {
@@ -33,7 +35,7 @@ func (s *ServiceImpl) Subscribe(e string, f Subscriber) {
 func (s *ServiceImpl) Publish(e string, ctx interface{}) {
 	subscribers, ok := s.subscriberMap[e]
 	if !ok {
-		logger.Log.Warnf("unknown event: %s", e)
+		log.Warnf("unknown event: %s", e)
 		return
 	}
 

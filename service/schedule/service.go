@@ -11,7 +11,7 @@ import (
 	"gorm.io/gorm"
 )
 
-var log = logger.Log
+var log = logger.Log()
 
 type IService interface {
 	AddTask(task *Task)

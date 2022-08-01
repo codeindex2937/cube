@@ -41,7 +41,7 @@ type Core struct {
 	Action   *action.Action
 }
 
-var log = logger.Log
+var log = logger.Log()
 
 func PrintHelp() context.IResponse {
 	return utils.PrintHelp("", &rootArgs{})
@@ -52,7 +52,7 @@ func subscribeEvents(c *Core, e event.IService) {
 		record := ctx.(*database.Alarm)
 		sched, err := schedule.Parse(record.Pattern)
 		if err != nil {
-			logger.Log.Error(err.Error())
+			log.Error(err.Error())
 		}
 
 		userID, _ := strconv.Atoi(record.UserID)
@@ -192,7 +192,7 @@ func (p *Core) SendMessage(userID int, regID uint64, m string) {
 	} else {
 		args, err := shlex.Split(m[1:])
 		if err != nil {
-			logger.Log.Errorf("unknown command: %v", m)
+			log.Errorf("unknown command: %v", m)
 			return
 		}
 

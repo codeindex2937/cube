@@ -8,6 +8,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+var log = logger.Log()
+
 func LogRequest() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		startTime := time.Now()
@@ -20,7 +22,7 @@ func LogRequest() gin.HandlerFunc {
 		statusCode := c.Writer.Status()
 		clientIP := c.ClientIP()
 
-		logger.Log.Infof("| %3d | %13v | %15s | %s | %s |",
+		log.Infof("| %3d | %13v | %15s | %s | %s |",
 			statusCode,
 			latencyTime,
 			clientIP,

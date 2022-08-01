@@ -26,7 +26,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var log = logger.Log
+var log = logger.Log()
 
 func rootHandler(c *core.Core, ctx *gin.Context) {
 	var err error

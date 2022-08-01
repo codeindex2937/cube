@@ -25,7 +25,7 @@ type VendorData struct {
 	Cuisines []string `json:"cuisines"`
 }
 
-var log = logger.Log
+var log = logger.Log()
 
 type Args struct {
 	List      *ListArgs   `arg:"subcommand:list"`

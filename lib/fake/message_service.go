@@ -4,7 +4,7 @@ import (
 	"cube/lib/logger"
 )
 
-var log = logger.Log
+var log = logger.Log()
 
 type MessageService struct{}
 

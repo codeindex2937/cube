@@ -6,12 +6,15 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-var Log *logrus.Logger
+var log *logrus.Logger
 
-func init() {
-	Log = logrus.New()
+func Log() *logrus.Logger {
+	if log == nil {
+		log = logrus.New()
 
-	Log.Out = os.Stdout
-	Log.SetLevel(logrus.DebugLevel)
-	Log.SetFormatter(&logrus.TextFormatter{})
+		log.Out = os.Stdout
+		log.SetLevel(logrus.DebugLevel)
+		log.SetFormatter(&logrus.TextFormatter{})
+	}
+	return log
 }
