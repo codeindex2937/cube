@@ -37,7 +37,7 @@ func (h *Food) poll(req *context.ChatContext, args *PollArgs) context.IResponse 
 
 	for _, v := range allowedVendors {
 		if len(v.VendorCode) < 1 {
-			log.Infof("%v: no code", v.VendorCode)
+			log.Infof("%v: no code", v.VendorURL)
 			continue
 		}
 

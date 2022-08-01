@@ -21,6 +21,7 @@ type VendorData struct {
 	Rating   float64  `json:"rating"`
 	Name     string   `json:"name"`
 	URL      string   `json:"url"`
+	Code     string   `json:"code"`
 	Cuisines []string `json:"cuisines"`
 }
 
@@ -69,6 +70,7 @@ func (h *Food) RenderMap(c *gin.Context) {
 			v.Rating,
 			v.Name,
 			v.RedirectionURL,
+			v.Code,
 			cuisines,
 		})
 	}
