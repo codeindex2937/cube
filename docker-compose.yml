@@ -1,0 +1,12 @@
+version: "3.3"
+services:
+  cube:
+    build:
+      context: .
+    container_name: cube
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./etc:/app/etc
+      - ./templates:/app/templates
+      - ./static:/app/static
