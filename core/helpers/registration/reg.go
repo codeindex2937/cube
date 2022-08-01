@@ -53,17 +53,15 @@ func displayRegistration(reg database.Registration) string {
 func listRegisteredAlarms(db *gorm.DB, userID string, regIDs []uint64) ([]RegisteredAlarm, error) {
 	pairs := []RegisteredAlarm{}
 	conditions := map[string]interface{}{
-		"registrations.user_id": userID,
+		"alarms.user_id": userID,
 	}
 
 	if len(regIDs) > 0 {
-		conditions["registrations.reg_id"] = regIDs
+		conditions["alarms.reg_id"] = regIDs
 	}
 
 	tx := db.Model(&database.Alarm{}).Where(conditions).Select(
-		"alarms.alarm_id, alarms.reg_id, registrations.reg_id",
-	).Joins(
-		"inner join registrations on alarms.reg_id = registrations.reg_id",
+		"alarms.alarm_id, alarms.reg_id",
 	).Scan(&pairs)
 
 	return pairs, tx.Error

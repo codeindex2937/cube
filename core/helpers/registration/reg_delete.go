@@ -2,6 +2,7 @@ package registration
 
 import (
 	"fmt"
+	"strconv"
 
 	"cube/lib/context"
 	"cube/lib/utils"
@@ -18,7 +19,7 @@ func (h *Reg) delete(req *context.ChatContext, args *DeleteArgs) context.IRespon
 		return utils.PrintUsage(arg.Config{Program: "delete"}, args)
 	}
 
-	alarmDeletedCount, err := deleteRegs(h.DB, h.Schedule, h.Event, fmt.Sprintf("%v", req.UserID), args.IDs)
+	alarmDeletedCount, err := deleteRegs(h.DB, h.Schedule, h.Event, strconv.Itoa(req.UserID), args.IDs)
 	if err != nil {
 		return context.NewTextResponse(err.Error())
 	}

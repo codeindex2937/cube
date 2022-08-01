@@ -2,6 +2,7 @@ package alarm
 
 import (
 	"fmt"
+	"strconv"
 
 	"cube/lib/context"
 	"cube/lib/database"
@@ -24,7 +25,7 @@ func (h *Alarm) create(req *context.ChatContext, args *CreateArgs) context.IResp
 	record := &database.Alarm{
 		Pattern: args.CronPattern,
 		Message: args.Message,
-		UserID:  fmt.Sprintf("%v", req.UserID),
+		UserID:  strconv.Itoa(req.UserID),
 	}
 
 	if args.Channel > 0 {
