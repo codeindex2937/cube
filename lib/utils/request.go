@@ -2,6 +2,7 @@ package utils
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"net/url"
 	"strconv"
@@ -11,8 +12,8 @@ import (
 	"github.com/alexflint/go-arg"
 )
 
-func ParseRequest(body []byte) (ctx context.ChatContext, err error) {
-	params, err := url.ParseQuery(string(body))
+func ParseRequest(body string) (ctx context.ChatContext, err error) {
+	params, err := url.ParseQuery(body)
 	if err != nil {
 		return ctx, fmt.Errorf("ParseQuery: %w", err)
 	}
@@ -26,6 +27,17 @@ func ParseRequest(body []byte) (ctx context.ChatContext, err error) {
 		Username:    params.Get("user_name"),
 		Text:        params.Get("text"),
 	}, nil
+}
+
+func ParseActionCallback(body string) (ctx context.ActionCallback, err error) {
+	params, err := url.ParseQuery(body)
+	if err != nil {
+		return ctx, fmt.Errorf("ParseQuery: %w", err)
+	}
+
+	err = json.Unmarshal([]byte(params.Get("payload")), &ctx)
+
+	return
 }
 
 func PrintHelp(cmd string, args interface{}) context.IResponse {

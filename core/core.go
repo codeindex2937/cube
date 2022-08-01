@@ -4,6 +4,7 @@ import (
 	"strconv"
 	"strings"
 
+	"cube/core/helpers/action"
 	"cube/core/helpers/alarm"
 	"cube/core/helpers/food"
 	"cube/core/helpers/registration"
@@ -17,6 +18,7 @@ import (
 	"cube/service/schedule"
 
 	"github.com/alexflint/go-arg"
+	"github.com/gin-gonic/gin"
 	"github.com/google/shlex"
 	"gorm.io/gorm"
 )
@@ -26,6 +28,7 @@ type rootArgs struct {
 	Reg     *registration.Args `arg:"subcommand:reg"`
 	Shuffle *ShuffleArgs       `arg:"subcommand:shuffle"`
 	Food    *food.Args         `arg:"subcommand:food"`
+	Action  *action.Args       `arg:"subcommand:action"`
 }
 
 type Core struct {
@@ -35,6 +38,7 @@ type Core struct {
 	Reg      *registration.Reg
 	Shuffle  *Shuffle
 	Food     *food.Food
+	Action   *action.Action
 }
 
 var log = logger.Log
@@ -86,6 +90,9 @@ func New(
 		},
 		Shuffle: new(Shuffle),
 		Food: &food.Food{
+			DB: db,
+		},
+		Action: &action.Action{
 			DB: db,
 		},
 	}

@@ -13,6 +13,32 @@ type TextResponse struct {
 	text string
 }
 
+type Action struct {
+	ActionType string `json:"type"`
+	Name       string `json:"name"`
+	Value      string `json:"value"`
+	Text       string `json:"text"`
+	Style      string `json:"style"`
+}
+
+type ActionResponse struct {
+	Title      string
+	Message    string
+	CallbackID string
+	Actions    []Action
+}
+
+type ActionCallback struct {
+	Actions    []Action `json:"actions"`
+	CallbackID string   `json:"callback_id"`
+	PostID     int      `json:"post_id"`
+	Token      string   `json:"token"`
+	User       struct {
+		UserID   int    `json:"user_id"`
+		Username string `json:"username"`
+	} `json:"user"`
+}
+
 var Success = TextResponse{
 	text: "success",
 }
@@ -42,6 +68,23 @@ func (r TextResponse) Normalize() gin.H {
 
 func (r TextResponse) Text() string {
 	return r.text
+}
+
+func (r ActionResponse) Normalize() gin.H {
+	return gin.H{
+		"text": r.Title,
+		"attachments": []map[string]interface{}{
+			{
+				"callback_id": r.CallbackID,
+				"text":        r.Message,
+				"actions":     r.Actions,
+			},
+		},
+	}
+}
+
+func (r ActionResponse) Text() string {
+	return r.Message
 }
 
 func NewTextResponse(text string) IResponse {
