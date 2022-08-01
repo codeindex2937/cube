@@ -1,7 +1,6 @@
 package core
 
 import (
-	"strconv"
 	"testing"
 
 	"cube/core/helpers/alarm"
@@ -20,11 +19,11 @@ type regData struct {
 
 func setupTestRegDelete(c *Core) {
 	datas := []struct {
-		UserID  string
+		UserID  int
 		regArgs []regData
 	}{
 		{
-			UserID: "1",
+			UserID: 1,
 			regArgs: []regData{
 				{
 					registration.CreateArgs{"desc1", "tok1", []string{}},
@@ -47,7 +46,7 @@ func setupTestRegDelete(c *Core) {
 			},
 		},
 		{
-			UserID: "2",
+			UserID: 2,
 			regArgs: []regData{
 				{
 					registration.CreateArgs{"desc1", "tok1", []string{}},
@@ -61,9 +60,8 @@ func setupTestRegDelete(c *Core) {
 
 	var regID uint64 = 0
 	for _, data := range datas {
-		uid, _ := strconv.Atoi(userID)
 		ctx := context.ChatContext{
-			UserID: uid,
+			UserID: data.UserID,
 		}
 
 		for _, reg := range data.regArgs {
