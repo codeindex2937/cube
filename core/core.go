@@ -182,7 +182,9 @@ func (c *Core) Handle(req context.ChatContext, args []string) context.IResponse 
 
 func (p *Core) SendMessage(userID int, regID uint64, m string) {
 	if !strings.HasPrefix(m, "/") {
-		message.Service().Send(p.DB, userID, regID, m)
+		message.Service().Send(p.DB, userID, regID, gin.H{
+			"text": m,
+		})
 	} else {
 		args, err := shlex.Split(m[1:])
 		if err != nil {
@@ -193,7 +195,7 @@ func (p *Core) SendMessage(userID int, regID uint64, m string) {
 		resp := p.Handle(context.ChatContext{
 			UserID: userID,
 		}, args)
-		message.Service().Send(p.DB, userID, regID, resp.Text())
+		message.Service().Send(p.DB, userID, regID, resp.Normalize())
 	}
 }
 

@@ -13,7 +13,7 @@ import (
 )
 
 type IService interface {
-	Send(db *gorm.DB, userID int, regID uint64, message string)
+	Send(db *gorm.DB, userID int, regID uint64, ctx map[string]interface{})
 }
 
 var impl IService
@@ -34,12 +34,15 @@ func SetService(newImpl IService) IService {
 	return originImpl
 }
 
-func (s *serviceImpl) Send(db *gorm.DB, userID int, regID uint64, message string) {
+func (s *serviceImpl) Send(db *gorm.DB, userID int, regID uint64, ctx map[string]interface{}) {
+	copiedCtx := make(map[string]interface{})
+	for k, v := range ctx {
+		copiedCtx[k] = v
+	}
+
 	if regID < 1 {
-		requestByte, _ := json.Marshal(map[string]interface{}{
-			"text":     message,
-			"user_ids": []int{userID},
-		})
+		copiedCtx["user_ids"] = []int{userID}
+		requestByte, _ := json.Marshal(copiedCtx)
 
 		resp, _ := http.Post(
 			"https://chat.synology.com/webapi/entry.cgi?api=SYNO.Chat.External&method=chatbot&version=2&token=%22"+config.Conf.Token+"%22",
@@ -58,9 +61,7 @@ func (s *serviceImpl) Send(db *gorm.DB, userID int, regID uint64, message string
 			log.Errorf("no record for %v", userID)
 		}
 
-		requestByte, _ := json.Marshal(map[string]interface{}{
-			"text": message,
-		})
+		requestByte, _ := json.Marshal(copiedCtx)
 
 		resp, _ := http.Post(
 			"https://chat.synology.com/webapi/entry.cgi?api=SYNO.Chat.External&method=incoming&version=2&token="+reg.Token,
