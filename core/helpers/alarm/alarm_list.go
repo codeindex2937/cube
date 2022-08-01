@@ -24,7 +24,7 @@ func (h *Alarm) list(req *context.ChatContext, args *ListArgs) context.IResponse
 
 	buf := new(bytes.Buffer)
 	for _, r := range records {
-		buf.Write([]byte(displayCurrentTask(h.Schedule, r) + "\n"))
+		buf.Write([]byte(displayCurrentTask(h.Schedule, r, h.Time) + "\n"))
 	}
 
 	return context.NewTextResponse(buf.String())

@@ -8,7 +8,7 @@ import (
 )
 
 func TestParseOnce(t *testing.T) {
-	sched, err := Parse("2021-12-07 01:02:03")
+	sched, err := Parse("2021-12-07 01:02:03", ts)
 	assert.NoError(t, err)
 	assert.False(t, sched.onceTime.IsZero())
 	assert.Equal(t, 2021, sched.onceTime.Year())
@@ -23,7 +23,7 @@ func TestParseOnce(t *testing.T) {
 
 func TestParseCron(t *testing.T) {
 	now := time.Now()
-	sched, err := Parse("* * * * *")
+	sched, err := Parse("* * * * *", ts)
 	assert.NoError(t, err)
 	assert.True(t, sched.onceTime.IsZero())
 	assert.Greater(t, time.Duration(0), now.Sub(sched.cron.Next(now)))

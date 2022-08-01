@@ -1,6 +1,7 @@
 package schedule
 
 import (
+	"cube/lib/utils"
 	"time"
 
 	"github.com/robfig/cron"
@@ -23,16 +24,14 @@ func (sched Schedule) IsOnce() bool {
 	return !sched.onceTime.IsZero()
 }
 
-func Parse(s string) (sched Schedule, err error) {
-	t, err := time.ParseInLocation("2006-01-02 15:04:05", s, time.Local)
-	if err == nil {
+func Parse(s string, ts *utils.TimeService) (sched Schedule, err error) {
+	if t, err := ts.Parse(s); err == nil {
 		return Schedule{
 			onceTime: t,
 		}, nil
 	}
 
-	cronSched, err := cron.ParseStandard(s)
-	if err == nil {
+	if cronSched, err := cron.ParseStandard(s); err == nil {
 		return Schedule{
 			cron: cronSched,
 		}, nil

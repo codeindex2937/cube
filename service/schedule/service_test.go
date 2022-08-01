@@ -7,10 +7,13 @@ import (
 	"time"
 
 	"cube/lib/database"
+	"cube/lib/utils"
 
 	"github.com/stretchr/testify/assert"
 	"gorm.io/gorm"
 )
+
+var ts = utils.NewTimeService()
 
 func setupTest(wg *sync.WaitGroup, s *Service, done chan struct{}) {
 	wg.Add(1)
@@ -28,7 +31,7 @@ func setupTest(wg *sync.WaitGroup, s *Service, done chan struct{}) {
 }
 
 func addTask(s *Service, ID uint64, minute int) {
-	sched, _ := Parse(fmt.Sprintf("%v * * * *", minute))
+	sched, _ := Parse(fmt.Sprintf("%v * * * *", minute), ts)
 	s.AddTask(&Task{
 		Sched: sched,
 		ID:    ID,
@@ -43,7 +46,7 @@ func TestScheduleServiceAddAndRemoveTask(t *testing.T) {
 		return
 	}
 
-	s := NewService(db)
+	s := NewService(db, ts)
 	assert.True(t, s.s.NextSchedule().IsZero())
 
 	setupTest(&wg, s, done)
@@ -73,7 +76,7 @@ func TestScheduleServiceSearchTask(t *testing.T) {
 		return
 	}
 
-	s := NewService(db)
+	s := NewService(db, ts)
 
 	setupTest(&wg, s, done)
 
@@ -108,7 +111,7 @@ func TestScheduleOnceTask(t *testing.T) {
 		return
 	}
 
-	s := NewService(db)
+	s := NewService(db, ts)
 
 	wg.Add(1)
 	go func() {
@@ -136,7 +139,7 @@ func TestScheduleOnceTask(t *testing.T) {
 
 	alarmID := record.AlarmID
 
-	sched, err := Parse(now)
+	sched, err := Parse(now, ts)
 	if !assert.NoError(t, err) {
 		return
 	}

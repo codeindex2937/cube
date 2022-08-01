@@ -17,7 +17,7 @@ RUN /usr/local/bin/upx -9 /go/bin/main
 FROM ubuntu:20.04
 
 RUN apt-get update
-RUN apt-get install -y --no-install-recommends --fix-missing ca-certificates
+RUN apt-get install -y --no-install-recommends --fix-missing ca-certificates tzdata
 RUN apt-get autoremove
 RUN apt-get clean && rm -rf /tmp/* /var/tmp/* /var/lib/apt/archive/* /var/lib/apt/lists/*
 

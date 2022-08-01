@@ -24,6 +24,7 @@ type Alarm struct {
 	DB       *gorm.DB
 	Schedule schedule.IService
 	Event    event.IService
+	Time     *utils.TimeService
 }
 
 var config = arg.Config{Program: "alarm"}
@@ -45,13 +46,13 @@ func (h *Alarm) Handle(req *context.ChatContext, args *Args) context.IResponse {
 	return utils.PrintHelp("alarm", args)
 }
 
-func displayCurrentTask(schedule schedule.IService, alarm database.Alarm) string {
+func displayCurrentTask(schedule schedule.IService, alarm database.Alarm, ts *utils.TimeService) string {
 	var nextSchedule string
 	task, nextSched := schedule.SearchTask(alarm.AlarmID)
 	if task == nil {
 		nextSchedule = "invalid"
 	} else {
-		nextSchedule = nextSched.String()
+		nextSchedule = ts.LocalTimeString(nextSched)
 	}
 
 	if alarm.RegID < 1 {

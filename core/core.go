@@ -50,7 +50,7 @@ func PrintHelp() context.IResponse {
 func subscribeEvents(c *Core, e event.IService) {
 	e.Subscribe(alarm.EventCreated, func(event string, ctx interface{}) {
 		record := ctx.(*database.Alarm)
-		sched, err := schedule.Parse(record.Pattern)
+		sched, err := c.Schedule.Parse(record.Pattern)
 		if err != nil {
 			log.Error(err.Error())
 		}
@@ -73,6 +73,7 @@ func subscribeEvents(c *Core, e event.IService) {
 func New(
 	db *gorm.DB,
 	scheduleService schedule.IService,
+	ts *utils.TimeService,
 ) *Core {
 	e := event.NewService()
 	c := &Core{
@@ -82,6 +83,7 @@ func New(
 			DB:       db,
 			Schedule: scheduleService,
 			Event:    e,
+			Time:     ts,
 		},
 		Reg: &registration.Reg{
 			DB:       db,
@@ -103,13 +105,16 @@ func New(
 }
 
 func NewFake() *Core {
+	ts := utils.NewTimeService()
 	e := event.NewService()
-	scheduleService := fake.NewScheduleService()
+	scheduleService := fake.NewScheduleService(ts)
 	db, err := database.New(":memory:")
 	if err != nil {
 		log.Errorf("NewFakeCore: %v\n", err)
 		return nil
 	}
+
+	ts.SetTimezone("UTC")
 
 	c := &Core{
 		Schedule: scheduleService,
@@ -118,6 +123,7 @@ func NewFake() *Core {
 			DB:       db,
 			Schedule: scheduleService,
 			Event:    e,
+			Time:     ts,
 		},
 		Reg: &registration.Reg{
 			DB:       db,
@@ -143,7 +149,7 @@ func (c *Core) InitAlarms() error {
 
 	for _, alarm := range alarms {
 		record := alarm
-		sched, err := schedule.Parse(record.Pattern)
+		sched, err := c.Schedule.Parse(record.Pattern)
 		if err != nil {
 			return err
 		}

@@ -81,16 +81,20 @@ func main() {
 		return
 	}
 
+	ts := utils.NewTimeService()
+	ts.SetTimezone(config.Conf.Time.Timezone)
+
 	db, err := database.New("chat.db")
 	if err != nil {
 		log.Errorf("%v", err)
 		return
 	}
 
-	scheduleService := schedule.NewService(db)
+	scheduleService := schedule.NewService(db, ts)
 	c := core.New(
 		db,
 		scheduleService,
+		ts,
 	)
 
 	r := gin.New()

@@ -47,5 +47,5 @@ func (h *Alarm) create(req *context.ChatContext, args *CreateArgs) context.IResp
 
 	h.Event.Publish(EventCreated, record)
 
-	return context.NewTextResponse(displayCurrentTask(h.Schedule, *record))
+	return context.NewTextResponse(displayCurrentTask(h.Schedule, *record, h.Time))
 }

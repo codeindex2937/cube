@@ -13,9 +13,14 @@ type MapConfig struct {
 	Lng float64 `yaml:"lng"`
 }
 
+type TimeConfig struct {
+	Timezone string `yaml:"timezone"`
+}
+
 type Config struct {
-	Token string    `yaml:"token"`
-	Map   MapConfig `yaml:"map"`
+	Token string     `yaml:"token"`
+	Map   MapConfig  `yaml:"map"`
+	Time  TimeConfig `yaml:"time"`
 }
 
 var Conf Config

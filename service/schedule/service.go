@@ -7,6 +7,7 @@ import (
 
 	"cube/lib/database"
 	"cube/lib/logger"
+	"cube/lib/utils"
 
 	"gorm.io/gorm"
 )
@@ -17,6 +18,7 @@ type IService interface {
 	AddTask(task *Task)
 	RemoveTasks(IDs []uint64)
 	SearchTask(ID uint64) (*Task, time.Time)
+	Parse(s string) (sched Schedule, err error)
 }
 
 type Task struct {
@@ -29,13 +31,15 @@ type Task struct {
 type Service struct {
 	m          sync.Mutex
 	s          ScheduleList
+	ts         *utils.TimeService
 	db         *gorm.DB
 	reschedule chan bool
 }
 
-func NewService(db *gorm.DB) *Service {
+func NewService(db *gorm.DB, ts *utils.TimeService) *Service {
 	return &Service{
 		db:         db,
+		ts:         ts,
 		reschedule: make(chan bool),
 	}
 }
@@ -44,7 +48,7 @@ func (s *Service) AddTask(task *Task) {
 	s.m.Lock()
 	defer s.m.Unlock()
 
-	s.s.Insert(task.Sched.Next(time.Now()), task.ID, task)
+	s.s.Insert(task.Sched.Next(s.ts.LocalTime()), task.ID, task)
 	s.reschedule <- true
 }
 
@@ -90,7 +94,7 @@ func (s *Service) removeOverdueTask() (overdueTasks []*Task, err error) {
 }
 
 func (s *Service) runOverdueTasks() {
-	now := time.Now()
+	now := s.ts.LocalTime()
 	nextTimeSlot := now.Add(time.Minute)
 	overdueTasks, _ := s.removeOverdueTask()
 
@@ -143,4 +147,8 @@ func (s *Service) Run(ctx context.Context) {
 			s.runOverdueTasks()
 		}
 	}
+}
+
+func (s *Service) Parse(t string) (sched Schedule, err error) {
+	return Parse(t, s.ts)
 }
