@@ -166,10 +166,7 @@ func (c *Core) Handle(req context.ChatContext, args []string) context.IResponse 
 		return context.NewErrorResponse(err)
 	}
 
-	err = p.Parse(args)
-	if err != nil {
-		return utils.PrintHelp("", root)
-	}
+	_ = p.Parse(args)
 
 	switch {
 	case root.Alarm != nil:
