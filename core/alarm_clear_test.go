@@ -1,6 +1,7 @@
 package core
 
 import (
+	"strconv"
 	"testing"
 
 	"cube/lib/context"
@@ -21,8 +22,9 @@ var otherAlarm = database.Alarm{
 
 func TestAlarmClear(t *testing.T) {
 	c := NewFake()
+	uid, _ := strconv.Atoi(userID)
 	ctx := context.ChatContext{
-		UserID: userID,
+		UserID: uid,
 	}
 
 	setupTestAlarmDelete(c)

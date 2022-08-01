@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"net/http"
-	"strconv"
 
 	"cube/config"
 	"cube/lib/database"
@@ -14,7 +13,7 @@ import (
 )
 
 type IService interface {
-	Send(db *gorm.DB, userID string, regID uint64, message string)
+	Send(db *gorm.DB, userID int, regID uint64, message string)
 }
 
 var impl IService
@@ -35,17 +34,11 @@ func SetService(newImpl IService) IService {
 	return originImpl
 }
 
-func (s *serviceImpl) Send(db *gorm.DB, userID string, regID uint64, message string) {
+func (s *serviceImpl) Send(db *gorm.DB, userID int, regID uint64, message string) {
 	if regID < 1 {
-		userId, err := strconv.Atoi(userID)
-		if err != nil {
-			log.Errorf("invalid user id: %v", userID)
-			return
-		}
-
 		requestByte, _ := json.Marshal(map[string]interface{}{
 			"text":     message,
-			"user_ids": []int{userId},
+			"user_ids": []int{userID},
 		})
 
 		resp, _ := http.Post(

@@ -51,10 +51,11 @@ func subscribeEvents(c *Core, e event.IService) {
 			logger.Log.Error(err.Error())
 		}
 
+		userID, _ := strconv.Atoi(record.UserID)
 		c.Schedule.AddTask(&schedule.Task{
 			Sched: sched,
 			ID:    record.AlarmID,
-			Run:   func() { c.SendMessage(record.UserID, record.RegID, record.Message) },
+			Run:   func() { c.SendMessage(userID, record.RegID, record.Message) },
 		})
 	})
 
@@ -142,7 +143,10 @@ func (c *Core) InitAlarms() error {
 		c.Schedule.AddTask(&schedule.Task{
 			Sched: sched,
 			ID:    record.AlarmID,
-			Run:   func() { c.SendMessage(record.UserID, record.RegID, record.Message) },
+			Run: func() {
+				userID, _ := strconv.Atoi(record.UserID)
+				c.SendMessage(userID, record.RegID, record.Message)
+			},
 		})
 	}
 	return nil
@@ -169,12 +173,14 @@ func (c *Core) Handle(req context.ChatContext, args []string) context.IResponse 
 		return c.Shuffle.Handle(&req, root.Shuffle)
 	case root.Food != nil:
 		return c.Food.Handle(&req, root.Food)
+	case root.Action != nil:
+		return c.Action.Handle(&req, root.Action)
 	}
 
 	return utils.PrintHelp("", root)
 }
 
-func (p *Core) SendMessage(userID string, regID uint64, m string) {
+func (p *Core) SendMessage(userID int, regID uint64, m string) {
 	if !strings.HasPrefix(m, "/") {
 		message.Service().Send(p.DB, userID, regID, m)
 	} else {

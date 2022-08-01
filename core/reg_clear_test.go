@@ -1,6 +1,7 @@
 package core
 
 import (
+	"strconv"
 	"testing"
 
 	"cube/lib/context"
@@ -12,8 +13,9 @@ import (
 
 func TestRegClear(t *testing.T) {
 	c := NewFake()
+	uid, _ := strconv.Atoi(userID)
 	ctx := context.ChatContext{
-		UserID: userID,
+		UserID: uid,
 	}
 
 	setupTestRegDelete(c)

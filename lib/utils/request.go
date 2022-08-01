@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"net/url"
+	"strconv"
 
 	"cube/lib/context"
 
@@ -16,12 +17,13 @@ func ParseRequest(body []byte) (ctx context.ChatContext, err error) {
 		return ctx, fmt.Errorf("ParseQuery: %w", err)
 	}
 
+	userID, _ := strconv.Atoi(params.Get("user_id"))
 	return context.ChatContext{
 		Token:       params.Get("token"),
 		ChannelId:   params.Get("channel_id"),
 		ChannelName: params.Get("channel_name"),
-		UserID:      params.Get("user_id"),
-		UserName:    params.Get("user_name"),
+		UserID:      userID,
+		Username:    params.Get("user_name"),
 		Text:        params.Get("text"),
 	}, nil
 }

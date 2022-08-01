@@ -23,7 +23,7 @@ func (h *Reg) clear(req *context.ChatContext, args *ClearArgs) context.IResponse
 		regIDs = append(regIDs, r.RegID)
 	}
 
-	alarmDeletedCount, err := deleteRegs(h.DB, h.Schedule, h.Event, req.UserID, regIDs)
+	alarmDeletedCount, err := deleteRegs(h.DB, h.Schedule, h.Event, fmt.Sprintf("%v", req.UserID), regIDs)
 	if err != nil {
 		return context.NewTextResponse(err.Error())
 	}

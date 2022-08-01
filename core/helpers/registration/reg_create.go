@@ -3,6 +3,7 @@ package registration
 import (
 	"cube/lib/context"
 	"cube/lib/database"
+	"fmt"
 )
 
 type CreateArgs struct {
@@ -19,8 +20,8 @@ func (h *Reg) create(req *context.ChatContext, args *CreateArgs) context.IRespon
 	record := database.Registration{
 		Token:       args.Token,
 		Description: args.Description,
-		UserID:      req.UserID,
-		UserName:    req.UserName,
+		UserID:      fmt.Sprintf("%v", req.UserID),
+		UserName:    req.Username,
 	}
 	tx := h.DB.Create(&record)
 	if tx.Error != nil {

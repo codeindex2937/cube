@@ -24,7 +24,7 @@ func (h *Alarm) create(req *context.ChatContext, args *CreateArgs) context.IResp
 	record := &database.Alarm{
 		Pattern: args.CronPattern,
 		Message: args.Message,
-		UserID:  req.UserID,
+		UserID:  fmt.Sprintf("%v", req.UserID),
 	}
 
 	if args.Channel > 0 {

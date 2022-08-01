@@ -1,6 +1,7 @@
 package core
 
 import (
+	"strconv"
 	"testing"
 
 	"cube/lib/context"
@@ -32,8 +33,9 @@ func setupTestAlarmDelete(c *Core) {
 	}
 
 	for _, data := range datas {
+		uid, _ := strconv.Atoi(data.UserID)
 		ctx := context.ChatContext{
-			UserID: data.UserID,
+			UserID: uid,
 		}
 
 		for _, args := range data.alarmArgs {
@@ -44,8 +46,9 @@ func setupTestAlarmDelete(c *Core) {
 
 func TestAlarmDelete(t *testing.T) {
 	c := NewFake()
+	uid, _ := strconv.Atoi(userID)
 	ctx := context.ChatContext{
-		UserID: userID,
+		UserID: uid,
 	}
 
 	setupTestAlarmDelete(c)

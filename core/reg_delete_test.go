@@ -1,6 +1,7 @@
 package core
 
 import (
+	"strconv"
 	"testing"
 
 	"cube/core/helpers/alarm"
@@ -60,8 +61,9 @@ func setupTestRegDelete(c *Core) {
 
 	var regID uint64 = 0
 	for _, data := range datas {
+		uid, _ := strconv.Atoi(userID)
 		ctx := context.ChatContext{
-			UserID: data.UserID,
+			UserID: uid,
 		}
 
 		for _, reg := range data.regArgs {
@@ -78,8 +80,8 @@ func setupTestRegDelete(c *Core) {
 func TestRegDelete(t *testing.T) {
 	c := NewFake()
 	ctx := context.ChatContext{
-		UserID:   "1",
-		UserName: "username1",
+		UserID:   1,
+		Username: "username1",
 	}
 
 	setupTestRegDelete(c)

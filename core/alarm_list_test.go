@@ -13,12 +13,12 @@ func TestAlarmList(t *testing.T) {
 	pattern := "* * * * *"
 	message := "surprise"
 	ctx1 := context.ChatContext{
-		UserID:   "1",
-		UserName: "username1",
+		UserID:   1,
+		Username: "username1",
 	}
 	ctx2 := context.ChatContext{
-		UserID:   "2",
-		UserName: "username2",
+		UserID:   2,
+		Username: "username2",
 	}
 
 	resp := c.CreateAlarm(ctx1, pattern, message)

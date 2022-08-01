@@ -19,14 +19,14 @@ var Success = TextResponse{
 
 type ChatContext struct {
 	Token       string `json:"token"`
-	UserID      string `json:"user_id"`
-	UserName    string `json:"username"`
+	UserID      int    `json:"user_id"`
+	Username    string `json:"username"`
 	Text        string `json:"text"`
 	ChannelId   string `json:"channel_id"`
 	ChannelName string `json:"channel_name"`
-	PostId      string `json:"post_id"`
+	PostID      string `json:"post_id"`
 	Timestamp   int64  `json:"timestamp"`
-	TriggerWord string `json:"trigger_wordd"`
+	TriggerWord string `json:"trigger_word"`
 }
 
 type Context struct {

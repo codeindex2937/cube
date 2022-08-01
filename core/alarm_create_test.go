@@ -15,7 +15,7 @@ func TestAlarmCreate(t *testing.T) {
 	pattern := "* * * * *"
 	message := "surprise"
 	ctx := context.ChatContext{
-		UserID: "1",
+		UserID: 1,
 	}
 
 	resp := c.CreateAlarm(ctx, pattern, message)
