@@ -16,6 +16,13 @@ type Alarm struct {
 	Message string
 }
 
+type Action struct {
+	ActionID uint64 `gorm:"primaryKey;autoIncrement"`
+	UserID   int
+	Message  string
+	Items    string
+}
+
 type FoodTag struct {
 	FoodTagID uint64 `gorm:"primaryKey"`
 	Name      string

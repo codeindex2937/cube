@@ -15,5 +15,6 @@ func New(path string) (db *gorm.DB, err error) {
 	db.AutoMigrate(&Registration{})
 	db.AutoMigrate(&FoodTag{})
 	db.AutoMigrate(&FoodTagRelation{})
+	db.AutoMigrate(&Action{})
 	return
 }
