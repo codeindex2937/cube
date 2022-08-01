@@ -1,0 +1,18 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cube-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cube
+  template:
+    metadata:
+      labels:
+        app: cube
+    spec:
+      containers:
+        - name: cube
+          image: cube:latest
+          imagePullPolicy: Never
