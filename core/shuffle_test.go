@@ -7,6 +7,7 @@ import (
 )
 
 func TestShuffle(t *testing.T) {
+	as := assert.New(t)
 	cases := []struct {
 		name   string
 		input  []string
@@ -31,8 +32,8 @@ func TestShuffle(t *testing.T) {
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
 			result, err := extractArgs(c.input)
-			assert.NoError(t, err)
-			assert.Equal(t, c.expect, result)
+			as.NoError(err)
+			as.Equal(c.expect, result)
 		})
 	}
 }

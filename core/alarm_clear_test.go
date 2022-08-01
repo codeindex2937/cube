@@ -21,6 +21,7 @@ var otherAlarm = database.Alarm{
 }
 
 func TestAlarmClear(t *testing.T) {
+	as := assert.New(t)
 	c := NewFake()
 	uid, _ := strconv.Atoi(userID)
 	ctx := context.ChatContext{
@@ -30,27 +31,27 @@ func TestAlarmClear(t *testing.T) {
 	setupTestAlarmDelete(c)
 
 	sched := c.Schedule.(*fake.ScheduleService)
-	assert.True(t, sched.ExistTask(1))
-	assert.True(t, sched.ExistTask(2))
-	assert.True(t, sched.ExistTask(3))
+	as.True(sched.ExistTask(1))
+	as.True(sched.ExistTask(2))
+	as.True(sched.ExistTask(3))
 
 	resp := c.ClearAlarm(ctx)
-	assert.Equal(t, "3 alarms deleted", resp.Text())
+	as.Equal("3 alarms deleted", resp.Text())
 
-	assert.False(t, sched.ExistTask(1))
-	assert.False(t, sched.ExistTask(2))
-	assert.False(t, sched.ExistTask(3))
-	assert.True(t, sched.ExistTask(4))
+	as.False(sched.ExistTask(1))
+	as.False(sched.ExistTask(2))
+	as.False(sched.ExistTask(3))
+	as.True(sched.ExistTask(4))
 
 	records := []database.Alarm{}
 	tx := c.DB.Find(&records)
-	if !assert.NoError(t, tx.Error) {
+	if !as.NoError(tx.Error) {
 		return
 	}
 
-	if assert.Equal(t, 1, len(records)) {
-		assert.Equal(t, otherAlarm.Pattern, records[0].Pattern)
-		assert.Equal(t, otherAlarm.UserID, records[0].UserID)
-		assert.Equal(t, otherAlarm.Message, records[0].Message)
+	if as.Equal(1, len(records)) {
+		as.Equal(otherAlarm.Pattern, records[0].Pattern)
+		as.Equal(otherAlarm.UserID, records[0].UserID)
+		as.Equal(otherAlarm.Message, records[0].Message)
 	}
 }

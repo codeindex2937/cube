@@ -39,40 +39,42 @@ func addTask(s *Service, ID uint64, minute int) {
 }
 
 func TestScheduleServiceAddAndRemoveTask(t *testing.T) {
+	as := assert.New(t)
 	done := make(chan struct{})
 	var wg sync.WaitGroup
 	db, err := database.New(":memory:")
-	if !assert.NoError(t, err) {
+	if !as.NoError(err) {
 		return
 	}
 
 	s := NewService(db, ts)
-	assert.True(t, s.s.NextSchedule().IsZero())
+	as.True(s.s.NextSchedule().IsZero())
 
 	setupTest(&wg, s, done)
 
 	minute := time.Now().Minute()
 	addTask(s, 2, minute+2)
-	assert.Less(t, 1*time.Minute, time.Until(s.s.NextSchedule()))
-	assert.Greater(t, 2*time.Minute, time.Until(s.s.NextSchedule()))
+	as.Less(1*time.Minute, time.Until(s.s.NextSchedule()))
+	as.Greater(2*time.Minute, time.Until(s.s.NextSchedule()))
 
 	addTask(s, 1, minute+1)
-	assert.Less(t, 0*time.Minute, time.Until(s.s.NextSchedule()))
-	assert.Greater(t, 1*time.Minute, time.Until(s.s.NextSchedule()))
+	as.Less(0*time.Minute, time.Until(s.s.NextSchedule()))
+	as.Greater(1*time.Minute, time.Until(s.s.NextSchedule()))
 
 	s.RemoveTasks([]uint64{1})
-	assert.Less(t, 1*time.Minute, time.Until(s.s.NextSchedule()))
-	assert.Greater(t, 2*time.Minute, time.Until(s.s.NextSchedule()))
+	as.Less(1*time.Minute, time.Until(s.s.NextSchedule()))
+	as.Greater(2*time.Minute, time.Until(s.s.NextSchedule()))
 
 	close(done)
 	wg.Wait()
 }
 
 func TestScheduleServiceSearchTask(t *testing.T) {
+	as := assert.New(t)
 	done := make(chan struct{})
 	var wg sync.WaitGroup
 	db, err := database.New(":memory:")
-	if !assert.NoError(t, err) {
+	if !as.NoError(err) {
 		return
 	}
 
@@ -86,28 +88,29 @@ func TestScheduleServiceSearchTask(t *testing.T) {
 	addTask(s, 2, minute+2)
 
 	task, nextSched := s.SearchTask(1)
-	if assert.NotNil(t, task) {
-		assert.Equal(t, task.ID, uint64(1))
-		assert.Equal(t, minute+1, nextSched.Minute())
+	if as.NotNil(task) {
+		as.Equal(task.ID, uint64(1))
+		as.Equal(minute+1, nextSched.Minute())
 	}
 
 	task, nextSched = s.SearchTask(2)
-	if assert.NotNil(t, task) {
-		assert.Equal(t, task.ID, uint64(2))
-		assert.Equal(t, minute+2, nextSched.Minute())
+	if as.NotNil(task) {
+		as.Equal(task.ID, uint64(2))
+		as.Equal(minute+2, nextSched.Minute())
 	}
 
 	task, nextSched = s.SearchTask(3)
-	assert.Nil(t, task)
+	as.Nil(task)
 }
 
 func TestScheduleOnceTask(t *testing.T) {
+	as := assert.New(t)
 	done := make(chan struct{})
 	exec := make(chan struct{})
 	var wg sync.WaitGroup
 	var isTaskExecuted bool
 	db, err := database.New(":memory:")
-	if !assert.NoError(t, err) {
+	if !as.NoError(err) {
 		return
 	}
 
@@ -133,14 +136,14 @@ func TestScheduleOnceTask(t *testing.T) {
 		Message: "",
 	}
 
-	if tx := db.Save(record); !assert.NoError(t, tx.Error) {
+	if tx := db.Save(record); !as.NoError(tx.Error) {
 		return
 	}
 
 	alarmID := record.AlarmID
 
 	sched, err := Parse(now, ts)
-	if !assert.NoError(t, err) {
+	if !as.NoError(err) {
 		return
 	}
 
@@ -156,10 +159,10 @@ func TestScheduleOnceTask(t *testing.T) {
 	s.runOverdueTasks()
 
 	<-exec
-	assert.True(t, isTaskExecuted)
+	as.True(isTaskExecuted)
 
 	tx := db.First(record, alarmID)
-	assert.Error(t, gorm.ErrRecordNotFound, tx.Error)
+	as.Error(gorm.ErrRecordNotFound, tx.Error)
 
 	close(done)
 	wg.Wait()

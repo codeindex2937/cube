@@ -26,21 +26,21 @@ func setupTestRegDelete(c *Core) {
 			UserID: 1,
 			regArgs: []regData{
 				{
-					registration.CreateArgs{"desc1", "tok1", []string{}},
+					registration.CreateArgs{Description: "desc1", Token: "tok1", Dummy: []string{}},
 					[]alarm.CreateArgs{
-						{0, pattern, msg},
+						{Channel: 0, CronPattern: pattern, Message: msg},
 					},
 				},
 				{
-					registration.CreateArgs{"desc1", "tok1", []string{}},
+					registration.CreateArgs{Description: "desc1", Token: "tok1", Dummy: []string{}},
 					[]alarm.CreateArgs{
-						{0, pattern, msg},
+						{Channel: 0, CronPattern: pattern, Message: msg},
 					},
 				},
 				{
-					registration.CreateArgs{"desc1", "tok1", []string{}},
+					registration.CreateArgs{Description: "desc1", Token: "tok1", Dummy: []string{}},
 					[]alarm.CreateArgs{
-						{0, pattern, msg},
+						{Channel: 0, CronPattern: pattern, Message: msg},
 					},
 				},
 			},
@@ -49,9 +49,9 @@ func setupTestRegDelete(c *Core) {
 			UserID: 2,
 			regArgs: []regData{
 				{
-					registration.CreateArgs{"desc1", "tok1", []string{}},
+					registration.CreateArgs{Description: "desc1", Token: "tok1", Dummy: []string{}},
 					[]alarm.CreateArgs{
-						{0, otherAlarm.Pattern, otherAlarm.Message},
+						{Channel: 0, CronPattern: otherAlarm.Pattern, Message: otherAlarm.Message},
 					},
 				},
 			},
@@ -76,6 +76,7 @@ func setupTestRegDelete(c *Core) {
 }
 
 func TestRegDelete(t *testing.T) {
+	as := assert.New(t)
 	c := NewFake()
 	ctx := context.ChatContext{
 		UserID:   1,
@@ -85,8 +86,8 @@ func TestRegDelete(t *testing.T) {
 	setupTestRegDelete(c)
 
 	resp := c.DeleteReg(ctx, 1, 2)
-	assert.Equal(t, context.NewTextResponse("2 alarms deleted"), resp)
+	as.Equal(context.NewTextResponse("2 alarms deleted"), resp)
 
 	record := database.Registration{}
-	assert.Equal(t, gorm.ErrRecordNotFound, c.DB.First(&record, 1).Error)
+	as.Equal(gorm.ErrRecordNotFound, c.DB.First(&record, 1).Error)
 }

@@ -9,6 +9,7 @@ import (
 )
 
 func TestAlarmList(t *testing.T) {
+	as := assert.New(t)
 	c := NewFake()
 	pattern := "* * * * *"
 	message := "surprise"
@@ -22,15 +23,15 @@ func TestAlarmList(t *testing.T) {
 	}
 
 	resp := c.CreateAlarm(ctx1, pattern, message)
-	if !assert.Equal(t, context.NewTextResponse("ID=1 \"* * * * *\" \"surprise\" Next=0001-01-01 00:00:00 +0000 UTC"), resp) {
+	if !as.Equal(context.NewTextResponse("ID=1 \"* * * * *\" \"surprise\" Next=0001-01-01 00:00:00 +0000 UTC"), resp) {
 		return
 	}
 
 	resp = c.CreateAlarm(ctx2, "* * * * *", "whatever")
-	if !assert.Equal(t, context.NewTextResponse("ID=2 \"* * * * *\" \"whatever\" Next=0001-01-01 00:00:00 +0000 UTC"), resp) {
+	if !as.Equal(context.NewTextResponse("ID=2 \"* * * * *\" \"whatever\" Next=0001-01-01 00:00:00 +0000 UTC"), resp) {
 		return
 	}
 
 	resp = c.ListAlarm(ctx1)
-	assert.Equal(t, context.NewTextResponse("ID=1 \"* * * * *\" \"surprise\" Next=0001-01-01 00:00:00 +0000 UTC\n"), resp)
+	as.Equal(context.NewTextResponse("ID=1 \"* * * * *\" \"surprise\" Next=0001-01-01 00:00:00 +0000 UTC\n"), resp)
 }

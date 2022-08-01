@@ -12,6 +12,8 @@ import (
 )
 
 func TestRegClear(t *testing.T) {
+	as := assert.New(t)
+	s := assert.New(t)
 	c := NewFake()
 	uid, _ := strconv.Atoi(userID)
 	ctx := context.ChatContext{
@@ -21,29 +23,28 @@ func TestRegClear(t *testing.T) {
 	setupTestRegDelete(c)
 
 	sched := c.Schedule.(*fake.ScheduleService)
-	assert.True(t, sched.ExistTask(1))
-	assert.True(t, sched.ExistTask(2))
-	assert.True(t, sched.ExistTask(3))
-	assert.True(t, sched.ExistTask(4))
+	s.True(sched.ExistTask(1))
+	s.True(sched.ExistTask(2))
+	s.True(sched.ExistTask(3))
+	s.True(sched.ExistTask(4))
 
 	resp := c.ClearReg(ctx)
-	assert.Equal(t, context.NewTextResponse("3 registrations deleted, 3 alarms deleted"), resp)
+	as.Equal(context.NewTextResponse("3 registrations deleted, 3 alarms deleted"), resp)
 
-	assert.False(t, sched.ExistTask(1))
-	assert.False(t, sched.ExistTask(2))
-	assert.False(t, sched.ExistTask(3))
-	assert.True(t, sched.ExistTask(4))
+	s.False(sched.ExistTask(1))
+	s.False(sched.ExistTask(2))
+	s.False(sched.ExistTask(3))
+	s.True(sched.ExistTask(4))
 
 	records := []database.Alarm{}
-	tx := c.DB.Find(&records)
-	if !assert.NoError(t, tx.Error) {
+	if !s.NoError(c.DB.Find(&records).Error) {
 		return
 	}
 
-	if assert.Equal(t, 1, len(records)) {
-		assert.Equal(t, "2", records[0].UserID)
-		assert.Equal(t, uint64(4), records[0].RegID)
-		assert.Equal(t, otherAlarm.Pattern, records[0].Pattern)
-		assert.Equal(t, otherAlarm.Message, records[0].Message)
+	if s.Equal(1, len(records)) {
+		s.Equal("2", records[0].UserID)
+		s.Equal(uint64(4), records[0].RegID)
+		s.Equal(otherAlarm.Pattern, records[0].Pattern)
+		s.Equal(otherAlarm.Message, records[0].Message)
 	}
 }
