@@ -2,7 +2,7 @@ package main
 
 import (
 	aborter "context"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"os"
 	"os/signal"
@@ -37,7 +37,7 @@ func rootHandler(c *core.Core, ctx *gin.Context) {
 		}
 	}(&h)
 
-	body, err := ioutil.ReadAll(ctx.Request.Body)
+	body, err := io.ReadAll(ctx.Request.Body)
 	if err != nil {
 		return
 	}
