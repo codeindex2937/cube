@@ -7,7 +7,6 @@
 - [gorm](https://pkg.go.dev/gorm.io/gorm)
 - [shlex](https://pkg.go.dev/github.com/google/shlex)
 - [go-arg](https://pkg.go.dev/github.com/alexflint/go-arg)
-- [tel](https://git.synology.inc/tingyuh/tel)
 
 # How to use
 1. 建立鬧鐘: alarm create "0 15 * * 1-5" "message!"
